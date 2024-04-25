@@ -24,6 +24,7 @@ The is a server-side application developed to fetch and manage cryptocurrency tr
 
 * Start the server by running npm start.
 * For api testing of different routes you can use postman.
+* Basically we need to use only one api to test as asked in task 1. Here is the format for that api ("http://localhost:3000/api/v1/tasks?address=0xc5102fE9359FD9a28f877a67E36B0F050d81a3CC"). You can change the address section to check for different addresses. Same using postman.
 
 ## Dependencies
 
