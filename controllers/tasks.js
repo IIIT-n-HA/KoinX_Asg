@@ -1,41 +1,52 @@
 const Wallet = require("../models/address_model");
 const axios = require("axios");
-
-const apitoken = "AH63RUK5RDSZ52CDVVICAKI6QJ6I8PGKTF";
-const address = "0xc5102fE9359FD9a28f877a67E36B0F050d81a3CC";
-const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${apitoken}`;
+require("dotenv").config();
+const Url = require("url");
 
 const getAllTransactions = async (req, res) => {
   try {
+    let { query } = Url.parse(req.url, true);
+    const Address = query.address;
+    const apitoken = process.env.apitoken;
+    const wallet = await Wallet.findOne({ address: Address });
+
+    const calculate = async (transactionsList) => {
+      let balance = 0;
+      transactionsList.forEach((transaction) => {
+        if (transaction.from === Address)
+          balance -= parseInt(transaction.value);
+        else balance += parseInt(transaction.value);
+      });
+      console.log(balance);
+    };
+
+    if (wallet) {
+      await calculate(wallet.transactionsList);
+      return res.status(500).json({ msg: "Address already exists." });
+    }
+
+    const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${Address}&startblock=0&endblock=99999999&sort=asc&apikey=${apitoken}`;
+
     axios
       .get(url)
       .then(async (response) => {
-        const checkAddr = await Wallet.findOne({ address: address });
-        if (checkAddr) {
-          res.status(500).json({ msg: "Address already exists." });
-        }
-
         const newWallet = await Wallet.create({
-          address: address,
-          data: response.data.result,
+          address: Address,
+          transactionsList: response.data.result.slice(-10),
         });
-        console.log(newWallet);
+
+        await calculate(newWallet.transactionsList);
+
+        // console.log(newWallet);
         res.status(200).json({ msg: "Address stored." });
       })
       .catch((error) => {
-        console.log("Error found");
+        console.log("Error in axios call:", error);
+        res.status(500).json({ error: "Internal server error of axios" });
       });
   } catch (error) {
-    console.log("Internal server error.");
+    console.log("Internal server error:", error);
     res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-const getBalanceAndCurrEthPrice = async (req, res) => {
-  try {
-    const adr = req.params.address;
-  } catch (error) {
-    console.log("Internal server error.");
   }
 };
 

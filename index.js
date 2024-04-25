@@ -30,23 +30,23 @@ const start = async () => {
     app.listen(port, () => {
       console.log(`Server is listening at ${port}`);
     });
-    setInterval(() => {
-      url =
-        "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=inr";
-      axios
-        .get(url)
-        .then(async (response) => {
-          const newPrice = await Price.create({
-            Ethereum: {
-              inr: response.data.ethereum.inr,
-            },
-          });
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log({ msg: "Error found" });
-        });
-    }, 10000);
+    // setInterval(() => {
+    //   url =
+    //     "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=inr";
+    //   axios
+    //     .get(url)
+    //     .then(async (response) => {
+    //       const newPrice = await Price.create({
+    //         Ethereum: {
+    //           inr: response.data.ethereum.inr,
+    //         },
+    //       });
+    //       console.log(response.data);
+    //     })
+    //     .catch((error) => {
+    //       console.log({ msg: "Error found" });
+    //     });
+    // }, 10000);
   } catch (error) {
     console.log("Unable to start the server.");
   }
