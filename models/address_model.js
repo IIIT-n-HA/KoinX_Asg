@@ -1,3 +1,5 @@
+// this is our schema for task 1 to store transactions.
+
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
